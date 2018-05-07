@@ -2,6 +2,7 @@ package com.pgf.exmvp1.view.fragment;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,10 +11,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.pgf.exmvp1.MvpApplication;
 import com.pgf.exmvp1.R;
+import com.pgf.exmvp1.presentation.UserPresenter;
 import com.pgf.exmvp1.view.UserView;
 
+import javax.inject.Inject;
+
 public class UserFragment extends Fragment implements View.OnClickListener, UserView {
+
+    @Inject
+    UserPresenter userPresenter;
 
     private static final String USER_ID = "USER_ID";
     private EditText userFirstName;
@@ -24,6 +32,13 @@ public class UserFragment extends Fragment implements View.OnClickListener, User
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        MvpApplication mvpApplicationContext = (MvpApplication) getActivity().getApplication();
+        mvpApplicationContext.getAppComponent();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,9 +55,30 @@ public class UserFragment extends Fragment implements View.OnClickListener, User
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        userPresenter.setView(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        userPresenter.resume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        userPresenter.pause();
+    }
+
+    @Override
     public void onClick(View v) {
 
-
+        userPresenter.saveUser();
     }
 
     @Override
